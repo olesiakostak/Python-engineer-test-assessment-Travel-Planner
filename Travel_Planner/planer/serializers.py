@@ -32,10 +32,11 @@ class PlaceSerializer(serializers.ModelSerializer):
 class TravelProjectSerializer(serializers.ModelSerializer):
     places = PlaceSerializer(many=True, read_only=True)
     is_completed = serializers.SerializerMethodField()
+    places_data = serializers.ListField(child=serializers.DictField(), write_only=True, required=False)
 
     class Meta:
         model = TravelProject
-        fields = ['id', 'name', 'start_date', 'description', 'places', 'is_completed']
+        fields = ['id', 'name', 'start_date', 'description', 'places', 'is_completed', 'places_data']
 
     def create(self, validated_data):
         places = validated_data.pop('places_data', [])
