@@ -17,7 +17,7 @@ class PlaceSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('A project cannot have more than 10 places.')
 
         if external_id:
-            api_url = f"https://api.artic.edu/api/v1/places/{external_id}"
+            api_url = f"https://api.artic.edu/api/v1/artworks/{external_id}"
             try:
                 response = requests.get(api_url, timeout=5)
                 if response.status_code != 200:
@@ -31,7 +31,26 @@ class PlaceSerializer(serializers.ModelSerializer):
 
 class TravelProjectSerializer(serializers.ModelSerializer):
     places = PlaceSerializer(many=True, read_only=True)
+    is_completed = serializers.SerializerMethodField()
 
     class Meta:
         model = TravelProject
-        fields = '__all__'
+        fields = ['id', 'name', 'start_date', 'description', 'places', 'is_completed']
+
+    def create(self, validated_data):
+        places = validated_data.pop('places_data', [])
+        
+        project = TravelProject.objects.create(**validated_data)
+        
+        for place in places:
+            Place.objects.create(project=project, **place)
+            
+        return project
+    
+    def get_is_completed(self, object):
+        places = object.places.all()
+
+        if not places:
+            return False
+        
+        return all(place.visited for place in places) 
