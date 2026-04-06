@@ -21,3 +21,4 @@ class Place(models.Model):
 
     def __str__(self):
         return f"Place id: {self.external_id}. Project: {self.project.name}'"
+    
