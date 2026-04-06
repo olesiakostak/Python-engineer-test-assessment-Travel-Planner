@@ -17,7 +17,7 @@ class PlaceSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError('A project cannot have more than 10 places.')
 
         if external_id:
-            api_url = f"https://api.artic.edu/api/v1/artworks/{external_id}"
+            api_url = f"https://api.artic.edu/api/v1/places/{external_id}"
             try:
                 response = requests.get(api_url, timeout=5)
                 if response.status_code != 200:
